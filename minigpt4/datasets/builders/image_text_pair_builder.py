@@ -5,7 +5,7 @@ import warnings
 from minigpt4.common.registry import registry
 from minigpt4.datasets.builders.base_dataset_builder import BaseDatasetBuilder
 from minigpt4.datasets.datasets.laion_dataset import LaionDataset
-from minigpt4.datasets.datasets.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDataset
+from minigpt4.datasets.datasets.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDataset, DajiangVQADataset
 
 
 @registry.register_builder("cc_sbu")
@@ -103,3 +103,36 @@ class CCSBUAlignBuilder(BaseDatasetBuilder):
         )
 
         return datasets
+    
+@registry.register_builder("dajiang_vqa")
+class CCSBUAlignBuilder(BaseDatasetBuilder):
+    train_dataset_cls = DajiangVQADataset
+
+    DATASET_CONFIG_DICT = {
+        "default": "configs/datasets/cc_sbu/dajiang.yaml",
+    }
+
+    def build_datasets(self):
+        # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
+        logging.info("Building datasets...")
+        self.build_processors()
+
+        build_info = self.config.build_info
+        storage_path = build_info.storage
+
+        datasets = dict()
+
+        if not os.path.exists(storage_path):
+            warnings.warn("storage path {} does not exist.".format(storage_path))
+
+        # create datasets
+        dataset_cls = self.train_dataset_cls
+        datasets['train'] = dataset_cls(
+            vis_processor=self.vis_processors["train"],
+            text_processor=self.text_processors["train"],
+            ann_paths=[os.path.join(storage_path, 'annotations/dajiang.json')],
+            vis_root=os.path.join(storage_path, 'images'),
+        )
+
+        return datasets
+

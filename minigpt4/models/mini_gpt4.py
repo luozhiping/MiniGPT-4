@@ -166,13 +166,16 @@ class MiniGPT4(Blip2Base):
     def forward(self, samples):
         image = samples["image"]
         img_embeds, atts_img = self.encode_img(image)
-        if hasattr(samples, 'question_split'):  # VQA dataset
-            print('VQA Batch')
-            vqa_prompt = '###Human: <Img><ImageHere></Img> '
-            img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, vqa_prompt)
-        elif self.prompt_list:
-            prompt = random.choice(self.prompt_list)
-            img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, prompt)
+  #      if hasattr(samples, 'question_split'):  # VQA dataset
+         #   print('VQA Batch')
+          #  vqa_prompt = '###Human: <Img><ImageHere></Img> '
+           # img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, vqa_prompt)
+       # elif self.prompt_list:
+        #    prompt = random.choice(self.prompt_list)
+         #   img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, prompt)
+
+        prompt = samples["question"]
+        img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, prompt)
 
         self.llama_tokenizer.padding_side = "right"
 

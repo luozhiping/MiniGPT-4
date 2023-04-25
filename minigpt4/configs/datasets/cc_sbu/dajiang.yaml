@@ -1,0 +1,6 @@
+datasets:
+  dajiang_vqa:
+    data_type: images
+    build_info:
+      storage: /export/home/.cache/lavis/dajiang
+
